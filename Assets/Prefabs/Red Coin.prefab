@@ -108,7 +108,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   value: 5
-  gameManager: {fileID: 8898995140628969265, guid: d802cd1d7c652494d94badac14e35835,
+  gameManager: {fileID: 4463681394403279940, guid: d802cd1d7c652494d94badac14e35835,
     type: 3}
   selfAxisRotationSpeed: 3
   animationSpeed: 1

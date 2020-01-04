@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
 
     public float speed = 10.0f;
     public float jumpForce = 5.0f;
+    public float deathZone = -1.0f;
 
     private void Start()
     { 
@@ -27,6 +28,19 @@ public class PlayerController : MonoBehaviour
         if (isGrounded)
         {
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        DeathCheck();
+    }
+
+    private void DeathCheck()
+    {
+        if (transform.position.y < deathZone)
+        {
+            Debug.Log("game over");
         }
     }
 

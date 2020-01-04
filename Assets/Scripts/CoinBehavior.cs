@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CoinBehavior : MonoBehaviour
+public class CoinBehavior : MonoBehaviour, IPooled
 {
     public int value;
-    public GameManager gameManager;
+    private GameManager gameManager;
 
     [Header("Visual effects parameters")]
     public float selfAxisRotationSpeed;
@@ -14,9 +14,20 @@ public class CoinBehavior : MonoBehaviour
 
     private void Start()
     {
+        gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
+    }
+
+    public void OnObjectSpawn()
+    {
+        transform.position = new Vector3(
+            transform.position.x,
+            0.9f,
+            transform.position.z
+        );
+
         transform.eulerAngles = new Vector3(
-            transform.eulerAngles.x, 
-            Random.Range(0.0f, 90.0f), 
+            90.0f,
+            Random.Range(0.0f, 90.0f),
             transform.eulerAngles.z
         );
     }
