@@ -12,6 +12,9 @@ public class GameManager : MonoBehaviour
     public Text scoreTitle;
     public Text timeTitle;
     public GameObject gameOverMenu;
+    public GameObject pauseMenu;
+
+    private bool isPlayerDead = false;
 
     private void FromPoolSpawner(string poolTag)
     {
@@ -30,6 +33,8 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         gameOverMenu.SetActive(false);
+        pauseMenu.SetActive(false);
+
         FromPoolSpawner("Coins");
         FromPoolSpawner("RedCoins");
         FromPoolSpawner("Obstacles");
@@ -53,7 +58,17 @@ public class GameManager : MonoBehaviour
     public void OnPlayerDeath()
     {
         Time.timeScale = 0.0f;
+        isPlayerDead = true;
         gameOverMenu.SetActive(true);
+    }
+
+    public void OnPause()
+    {
+        if (!isPlayerDead)
+        {
+            Time.timeScale = 0.0f;
+            pauseMenu.SetActive(true);
+        }
     }
 
     public void QuitUI()
@@ -63,7 +78,14 @@ public class GameManager : MonoBehaviour
 
     public void RetryUI()
     {
+        isPlayerDead = false;
         Time.timeScale = 1.0f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void ContinueUI()
+    {
+        Time.timeScale = 1.0f;
+        pauseMenu.SetActive(false);
     }
 }

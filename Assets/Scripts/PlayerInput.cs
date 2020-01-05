@@ -23,5 +23,10 @@ public class PlayerInput : MonoBehaviour
         {
             playerController.Jump();
         }
+
+        if (Input.GetKeyDown(KeyCode.P) || Input.GetKeyDown(KeyCode.Escape))
+        {
+            playerController.gameManager.OnPause();
+        }
     }
 }
