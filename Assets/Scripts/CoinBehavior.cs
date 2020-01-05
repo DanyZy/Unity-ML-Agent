@@ -5,17 +5,11 @@ using UnityEngine;
 public class CoinBehavior : MonoBehaviour, IPooled
 {
     public int value;
-    private GameManager gameManager;
 
     [Header("Visual effects parameters")]
     public float selfAxisRotationSpeed;
     public float animationSpeed = 1.0f;
     public float animationHeight = 0.01f;
-
-    private void Start()
-    {
-        gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
-    }
 
     public void OnObjectSpawn()
     {
@@ -34,7 +28,10 @@ public class CoinBehavior : MonoBehaviour, IPooled
 
     private void Update()
     {
-        VisualEffects();
+        if (Time.timeScale != 0)
+        {
+            VisualEffects();
+        }
     }
 
     private void VisualEffects()
@@ -45,8 +42,6 @@ public class CoinBehavior : MonoBehaviour, IPooled
 
     public void OnPlayerTouch()
     {
-        gameManager.score += value;
-
         transform.position = new Vector3(
             Random.Range(-45.0f, 45.0f), 
             transform.position.y, 

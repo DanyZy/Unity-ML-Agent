@@ -8,6 +8,8 @@ TagManager:
   - player
   - jump obstacle
   - forward obstacle
+  - coin
+  - death zone
   layers:
   - Default
   - TransparentFX

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviour
@@ -11,6 +12,9 @@ public class PlayerController : MonoBehaviour
     public float speed = 10.0f;
     public float jumpForce = 5.0f;
     public float deathZone = -1.0f;
+
+    [Space]
+    public GameManager gameManager;
 
     private void Start()
     { 
@@ -31,19 +35,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void FixedUpdate()
-    {
-        DeathCheck();
-    }
-
-    private void DeathCheck()
-    {
-        if (transform.position.y < deathZone)
-        {
-            Debug.Log("game over");
-        }
-    }
-
     #region Collision handler
     private void OnCollisionEnter(Collision collision)
     {
@@ -51,7 +42,6 @@ public class PlayerController : MonoBehaviour
         {
             isGrounded = true;
         }
-
     }
 
     private void OnCollisionExit(Collision collision)
@@ -59,6 +49,22 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.tag == "ground")
         {
             isGrounded = false;
+        }
+    }
+    #endregion
+
+    #region Trigger handler
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "coin")
+        {
+            gameManager.score += other.GetComponent<CoinBehavior>().value;
+            gameManager.CoinCounterUI();
+        }
+
+        if (other.gameObject.tag == "death zone")
+        {
+            gameManager.OnPlayerDeath();
         }
     }
     #endregion
