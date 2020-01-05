@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     [Header("UI elements")]
     public Text scoreTitle;
     public Text timeTitle;
+    public Text bestScore;
     public GameObject gameOverMenu;
     public GameObject pauseMenu;
 
@@ -57,6 +58,12 @@ public class GameManager : MonoBehaviour
 
     public void OnPlayerDeath()
     {
+        if (score > PlayerPrefs.GetInt("Score"))
+        {
+            PlayerPrefs.SetInt("Score", score);
+        }
+
+        bestScore.text = "Best score: " + PlayerPrefs.GetInt("Score").ToString();
         Time.timeScale = 0.0f;
         isPlayerDead = true;
         gameOverMenu.SetActive(true);
