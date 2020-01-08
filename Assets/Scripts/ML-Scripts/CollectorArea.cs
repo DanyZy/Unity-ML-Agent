@@ -7,7 +7,7 @@ public class CollectorArea : Area
 {
     public float spawnRange = 45.0f;
 
-    private void FromPoolSpawner(string poolTag)
+    public void FromPoolSpawner(string poolTag)
     {
         Queue<Vector3> positions = new Queue<Vector3>();
         Queue<Quaternion> rotations = new Queue<Quaternion>();
@@ -19,6 +19,20 @@ public class CollectorArea : Area
         }
 
         Pooler.Instance.SpawnEntirePool(poolTag, positions, rotations);
+    }
+
+    public void ResetCollectorArea()
+    {
+        foreach (Transform child in transform)
+        {
+            if (child.CompareTag("container"))
+            {
+                foreach(Transform childOfChild in child.transform)
+                {
+                    childOfChild.gameObject.SetActive(false);
+                }
+            }
+        }
     }
 
     public override void ResetArea()

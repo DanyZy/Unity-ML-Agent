@@ -30,6 +30,8 @@ public class Pooler : MonoBehaviour
         foreach (Pool pool in pools)
         {
             GameObject poolContainer = new GameObject(pool.tag + " Container");
+            poolContainer.transform.SetParent(transform);
+            poolContainer.tag = "container";
 
             Queue<GameObject> objectPool = new Queue<GameObject>();
 
