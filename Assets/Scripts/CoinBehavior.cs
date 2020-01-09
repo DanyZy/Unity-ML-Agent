@@ -15,7 +15,7 @@ public class CoinBehavior : MonoBehaviour, IPooled
     {
         transform.position = new Vector3(
             transform.position.x,
-            0.9f,
+            0.5f,
             transform.position.z
         );
 

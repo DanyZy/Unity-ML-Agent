@@ -2,19 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
+using MLAgents.Sensor;
 
-[RequireComponent(typeof(Rigidbody))]
 public class PlayerAgent : Agent
 {
     private Rigidbody rb;
-    private bool isGrounded = false;
 
-    public float speed = 10.0f;
-    public float jumpForce = 5.0f;
+    public float speed = 40.0f;
     public float deathZone = -1.0f;
 
     private CollectorAcademy myAcademy;
     private CollectorArea myArea;
+    private RayPerception3D myRayPer;
     public GameObject area;
 
     public override void InitializeAgent()
@@ -22,49 +21,47 @@ public class PlayerAgent : Agent
         base.InitializeAgent();
         rb = GetComponent<Rigidbody>();
         myArea = area.GetComponent<CollectorArea>();
+        myRayPer = GetComponent<RayPerception3D>();
         myAcademy = FindObjectOfType<CollectorAcademy>();
     }
 
     public override void CollectObservations()
     {
-        var localVelocity = transform.InverseTransformDirection(rb.velocity);
-        AddVectorObs(localVelocity.x);
-        AddVectorObs(localVelocity.z);
-        AddVectorObs(isGrounded);
+        const float rayDistance = 35f;
+        float[] rayAngles = { 20f, 90f, 160f, 45f, 135f, 70f, 110f };
+        float[] rayAngles1 = { 25f, 95f, 165f, 50f, 140f, 75f, 115f };
+        float[] rayAngles2 = { 15f, 85f, 155f, 40f, 130f, 65f, 105f };
+
+        string[] detectableObjects = { "coin", "wall" };
+        AddVectorObs(myRayPer.Perceive(rayDistance, rayAngles, detectableObjects));
+        AddVectorObs(myRayPer.Perceive(rayDistance, rayAngles1, detectableObjects, 0f, 5f));
+        AddVectorObs(myRayPer.Perceive(rayDistance, rayAngles2, detectableObjects, 0f, 10f));
+        AddVectorObs(transform.InverseTransformDirection(rb.velocity));
     }
 
     public void MoveAgent(float[] act)
     {
-        var movementVector = Vector3.zero;
+        var dirToGo = Vector3.zero;
+        var rotateDir = Vector3.zero;
 
         var action = Mathf.FloorToInt(act[0]);
         switch (action)
         {
             case 1:
-                movementVector = transform.forward * 1f;
+                dirToGo = transform.forward * 1f;
                 break;
             case 2:
-                movementVector = transform.forward * -1f;
+                dirToGo = transform.forward * -1f;
                 break;
             case 3:
-                movementVector = transform.right * 1f;
+                rotateDir = transform.up * 1f;
                 break;
             case 4:
-                movementVector = transform.right * -1f;
-                break;
-            case 5:
-                Jump();
+                rotateDir = transform.up * -1f;
                 break;
         }
-        rb.AddForce(movementVector * speed, ForceMode.Acceleration);
-    }
-
-    public void Jump()
-    {
-        if (isGrounded)
-        {
-            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-        }
+        transform.Rotate(rotateDir, Time.deltaTime * 200f);
+        rb.AddForce(dirToGo * 2f, ForceMode.VelocityChange);
     }
 
     public override float[] Heuristic()
@@ -85,10 +82,6 @@ public class PlayerAgent : Agent
         {
             return new float[] { 2 };
         }
-        if (Input.GetKey(KeyCode.Space))
-        {
-            return new float[] { 5 };
-        }
         return new float[] { 0 };
     }
 
@@ -101,17 +94,9 @@ public class PlayerAgent : Agent
     #region Collision handler
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.tag == "ground")
+        if (collision.gameObject.tag == "wall")
         {
-            isGrounded = true;
-        }
-    }
-
-    private void OnCollisionExit(Collision collision)
-    {
-        if (collision.gameObject.tag == "ground")
-        {
-            isGrounded = false;
+            AddReward(-1f);
         }
     }
     #endregion
@@ -121,17 +106,14 @@ public class PlayerAgent : Agent
     {
         if (other.gameObject.tag == "coin")
         {
-            AddReward(other.GetComponent<CoinBehavior>().value);
+            AddReward(1f);
             myAcademy.totalScore += other.GetComponent<CoinBehavior>().value;
-            if (myAcademy.totalScore >= 20)
-            {
-                Done();
-            }
         }
 
         if (other.gameObject.tag == "death zone")
         {
-            AgentReset();
+            Done();
+            AddReward(-5f);
         }
     }
     #endregion

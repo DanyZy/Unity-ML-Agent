@@ -7,6 +7,13 @@ public class CollectorArea : Area
 {
     public float spawnRange = 45.0f;
 
+    private void Start()
+    {
+        FromPoolSpawner("Coins");
+        FromPoolSpawner("RedCoins");
+        FromPoolSpawner("Obstacles");
+    }
+
     public void FromPoolSpawner(string poolTag)
     {
         Queue<Vector3> positions = new Queue<Vector3>();
